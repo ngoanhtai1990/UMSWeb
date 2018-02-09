@@ -1,0 +1,216 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Cếch</title>
+        <h:outputScript>
+        //<![CDATA[
+            function isNumber(evt)
+            {
+                var charCode = (evt.which) ? evt.which : event.keyCode;
+                if (charCode > 31 && (charCode < 48 || charCode > 57))
+                    return false;
+
+                return true;
+            }
+            //]]>
+        </h:outputScript>>
+        <style type="text/css">
+            .stylebutton {
+                /*                height: 25px !important;
+                                    text-align: center !important;
+                                    font-size: 10px !important;*/
+            }
+            .ui-widget .ui-widget {
+                font-size: 12px;
+            }
+            table tr td {
+                height: 10px;
+            }
+            .red {
+                background: #9494b8 !important
+            }
+            .white {
+
+            }
+        </style>
+    </h:head>
+    <h:body>
+        <h:form id="main">
+            <p:panel>
+                <table>
+                    <tr>
+                        <td>
+                            <h:outputText value="UserID"/>
+                        </td>
+                        <td>
+                            <h:inputText value="#{umsBean.userSearch.userId}" style="font-size: 12px"/>
+                        </td>
+                        <td>
+                            <h:outputText value="Username"/>
+                        </td>
+                        <td>
+                            <h:inputText value="#{umsBean.userSearch.userName}" style="font-size: 12px"/>
+                        </td>
+                        <td>
+                            <h:outputText value="Age"/>
+                        </td>
+                        <td>
+                            <h:inputText value="#{umsBean.userSearch.age}" style="font-size: 12px"/>
+                        </td>
+                        <td>
+                            <h:outputText value="Gender"/>
+                        </td>
+                        <td>
+                            <h:inputText value="#{umsBean.userSearch.gender}" style="font-size: 12px"/>
+                        </td>
+                        <td>
+                            <div align="center"><p:commandButton value="Search" 
+                                                                 actionListener="#{umsBean.searchMeetPeople}" 
+                                                                 update="datafilter"
+                                                                 styleClass="stylebutton"/>
+                            </div>
+                        </td>
+                        <td style="width: 1100px">
+                            <p:commandButton id="deactive" value="Deactive" style="background-color: #2159f2; 
+                                             float: right; width: 200px;
+                                             font-weight: bold" 
+                                             action="#{umsBean.deactiveUserMeetPeople}" update="datafilter" 
+                                             disabled="#{!umsBean.userSelected.status}"
+                                             styleClass="stylebutton"/>
+                            <p:commandButton id="active" value="Active" style="background-color: #2159f2; 
+                                             float: right; width: 200px;
+                                             font-weight: bold" disabled="#{umsBean.userSelected.status}" 
+                                             action="#{umsBean.activeUserMeetPeople}" update="datafilter" 
+                                             styleClass="stylebutton"/>
+                            <p:commandButton value="Edit" icon="ui-icon-pencil" style="float: right !important"
+                                             onclick="PF('dlg1').show();"
+                                             styleClass="stylebutton"/>
+                        </td>
+                    </tr>
+                </table>
+                <br/>
+                <p:dataTable id="datafilter" value="#{umsBean.listFiltered}" var="us" scrollable="true" scrollHeight="750"
+                             editable="true" editMode="cell" 
+                             rows="30" paginator="true" 
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             rowsPerPageTemplate="20,25,30" 
+                             selection="#{umsBean.userSelected}" selectionMode="single" 
+                             rowKey="#{us.userId}" 
+                             rowStyleClass="#{us.status ? 'white' : 'red'}">
+                    <p:ajax event="rowSelect" listener="#{umsBean.onRowSelect}" update=":main:active :main:deactive :main:edituser"/>
+                    <p:column headerText="Status" style="width: 25px">
+                        <h:outputText styleClass="ui-icon #{us.status ? 'ui-icon-unlocked' : 'ui-icon-locked'}"/>
+                    </p:column>
+                    <p:column headerText="UserID" style="width: 300px" >
+                        <h:outputText value="#{us.userId}" style="width: 190px; font-size: 15px"/>
+                    </p:column>
+                    <p:column headerText="Username" style="width: 200px">
+                        <h:outputText value="#{us.userName}" style="font-size: 15px"/>
+                    </p:column>
+                    <p:column headerText="Age" style="width: 30px; text-align: center">
+                        <h:outputText value="#{us.age}" style="font-size: 15px"/>
+                    </p:column>
+                    <p:column headerText="Online" style="width: 50px; text-align: center">
+                        <h:outputText value="#{us.online}" style="font-size: 15px"/>
+                    </p:column>
+                    <p:column headerText="Video call waiting" style="width: 200px; text-align: center">
+                        <h:outputText value="#{us.videoCallWaiting}" style="font-size: 15px"/>
+                    </p:column>
+                    <p:column headerText="Voice call waiting" style="width: 200px; text-align: center">
+                        <h:outputText value="#{us.voieCallWaiting}" style="font-size: 15px"/>
+                    </p:column>
+                    <p:column headerText="Call waiting" style="width: 100px; text-align: center">
+                        <h:outputText value="#{us.callWaiting}" style="font-size: 15px"/>
+                    </p:column>
+                    <p:column headerText="Gender" style="width: 50px; text-align: center">
+                        <h:outputText value="#{us.gender}" style="font-size: 15px"/>
+                    </p:column>
+                    <p:column headerText="Lat">
+                        <h:outputText value="#{us.lat}" style="font-size: 15px"/>
+                    </p:column>
+                    <p:column headerText="Lon">
+                        <h:outputText value="#{us.lon}" style="font-size: 15px"/>
+                    </p:column>
+                </p:dataTable>
+            </p:panel>
+            <p:dialog id="edituser" header="Edit user" widgetVar="dlg1" >
+                <p:commandButton value="Update on cache" update="datafilter" action="#{umsBean.updateCache}"/>
+                <p:commandButton value="Update on DB" update="datafilter" action="#{umsBean.updateDatabase}"/>
+                <p:commandButton value="Update All" update="datafilter" action="#{umsBean.updateUser}"/>
+                <table>
+                    <tr>
+                        <td>
+                            <h:outputText value="Username: " />
+                        </td>
+                        <td>
+                            <p:inputText value="#{umsBean.userSelected.userName}"/>
+                        </td>
+                        <td>
+                            <h:outputText value=""/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <h:outputText value="Age"/>
+                        </td>
+                        <td>
+                            <p:inputText id="editAgeuser" value="#{umsBean.userSelected.age}" onkeypress="return isNumber(event)"/>
+                        </td>
+                        <td>
+                            <h:outputText value=""/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <h:outputText value="Voicecall waiting"/>
+                        </td>
+                        <td>
+                            <p:selectBooleanButton value="#{umsBean.userSelected.voieCallWaiting}" onLabel="True" offLabel="False"/>
+                        </td>
+                        <td>
+                            <h:outputText value=""/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <h:outputText value="Video call waiting"/>
+                        </td>
+                        <td>
+                            <p:selectBooleanButton value="#{umsBean.userSelected.videoCallWaiting}" onLabel="True" offLabel="False"/>
+                        </td>
+                        <td>
+                            <h:outputText value=""/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <h:outputText value="Call waiting"/>
+                        </td>
+                        <td>
+                            <p:inputText value="#{umsBean.userSelected.callWaiting}"/>
+                        </td>
+                        <td>
+                            <h:outputText value=""/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <h:outputText value="gender"/>
+                        </td>
+                        <td>
+                            <p:inputText value="#{umsBean.userSelected.gender}"/>
+                        </td>
+                        <td>
+                            <h:outputText value=""/>
+                        </td>
+                    </tr>
+                </table>
+            </p:dialog>
+        </h:form>
+    </h:body>
+</html>
