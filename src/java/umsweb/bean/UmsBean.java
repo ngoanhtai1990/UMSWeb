@@ -36,7 +36,7 @@ public class UmsBean {
     private UserMeetPeople userSelected;
     private Map<String, UserMeetPeople> userUpdate;
     private DbLoader dbLoader;
-    
+
     NetClientPost client;
 
     public UmsBean() throws ParseException {
@@ -46,7 +46,11 @@ public class UmsBean {
         this.dataMeet = getDataMeetPeople();
         this.listFiltered = new ArrayList<>(dataMeet);
         userUpdate = new HashMap<>();
-        userSelected = listFiltered.get(0);
+        if (listFiltered.isEmpty()) {
+            userSelected = new UserMeetPeople();
+        } else {
+            userSelected = listFiltered.get(0);
+        }
         dbLoader = new DbLoader();
     }
 
@@ -67,6 +71,9 @@ public class UmsBean {
                 listFiltered.add(temp);
             }
         }
+        if (listFiltered.isEmpty()) {
+            userSelected = new UserMeetPeople();
+        }
     }
 
     public void deactiveUserMeetPeople() throws ParseException {
@@ -82,15 +89,15 @@ public class UmsBean {
     public void updateUser() {
         userUpdate.put(userSelected.getUserId(), userSelected);
     }
-    
+
     public void updateCache() {
-        
+
     }
-    
+
     public void updateDatabase() {
         dbLoader.updateUser(userSelected);
     }
-    
+
     public final List<UserMeetPeople> getDataMeetPeople() {
         List<UserMeetPeople> data = new ArrayList<>();
         try {
@@ -105,7 +112,7 @@ public class UmsBean {
     public void onRowSelect(SelectEvent event) {
         userSelected = (UserMeetPeople) event.getObject();
     }
-    
+
     public List<UserInfor> getDataUMS() {
         return dataUMS;
     }
