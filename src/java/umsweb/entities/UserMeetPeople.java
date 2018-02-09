@@ -97,20 +97,20 @@ public class UserMeetPeople implements Serializable {
     }
 
     public UserMeetPeople() {
-        this.region = null;
+        this.region = 0L;
         this.online = false;
         this.videoCallWaiting = false;
-        this.bodyType = null;
-        this.isAvatar = null;
+        this.bodyType = 0L;
+        this.isAvatar = 0L;
         this.voieCallWaiting = false;
-        this.callWaiting = null;
-        this.lon = null;
-        this.lastLogin = null;
-        this.userName = null;
-        this.age = null;
-        this.gender = null;
-        this.userId = null;
-        this.lat = null;
+        this.callWaiting = 0L;
+        this.lon = 0.0;
+        this.lastLogin = "";
+        this.userName = "";
+        this.age = 0L;
+        this.gender = 0L;
+        this.userId = "";
+        this.lat = 0.0;
     }
 
     public Boolean getStatus() {
