@@ -91,10 +91,11 @@ public class UmsBean {
             }
         }
         if (listFiltered.isEmpty()) {
+            //xxx
             userSelected = new UserMeetPeople();
-        } else {
-            userSelected = listFiltered.get(0);
+            listFiltered.add(userSelected);
         }
+        userSelected = listFiltered.get(0);
     }
 
     public void deactiveUserMeetPeople() throws ParseException {
