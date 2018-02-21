@@ -5,17 +5,25 @@
  */
 package umsweb.bean;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+import javax.servlet.ServletContext;
 import org.json.simple.parser.ParseException;
+import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
+import umsweb.call.App;
 import umsweb.call.DbLoader;
 import umsweb.call.NetClientPost;
 import umsweb.entities.UserInfor;
@@ -34,12 +42,12 @@ public class UmsBean {
     private List<UserMeetPeople> listFiltered;
     private UserMeetPeople userSearch;
     private UserMeetPeople userSelected;
+    private UserMeetPeople userOnDB;
     private Map<String, UserMeetPeople> userUpdate;
     private DbLoader dbLoader;
-
     NetClientPost client;
 
-    public UmsBean() throws ParseException {
+    public UmsBean() throws ParseException, IOException {
         userSearch = new UserMeetPeople();
         client = new NetClientPost();
 //        this.dataUMS = getListDataOnCache();
@@ -51,7 +59,18 @@ public class UmsBean {
         } else {
             userSelected = listFiltered.get(0);
         }
+        userOnDB = new UserMeetPeople();
         dbLoader = new DbLoader();
+        ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
+        try {
+            System.out.println(context.getRealPath("/WEB-INF/"));
+            InputStream input = new FileInputStream(context.getRealPath("/WEB-INF/") + "db.properties");
+            Properties prop = new Properties();
+            prop.load(input);
+            System.out.println("Load: " + prop.getProperty("ip"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public final List<UserInfor> getListDataOnCache() throws ParseException {
@@ -73,6 +92,8 @@ public class UmsBean {
         }
         if (listFiltered.isEmpty()) {
             userSelected = new UserMeetPeople();
+        } else {
+            userSelected = listFiltered.get(0);
         }
     }
 
@@ -86,16 +107,25 @@ public class UmsBean {
         client.reActiveUser(userSelected);
     }
 
-    public void updateUser() {
-        userUpdate.put(userSelected.getUserId(), userSelected);
+    public void updateUser() throws ParseException {
+//        userUpdate.put(userSelected.getUserId(), userSelected);
+        updateCache();
+        updateDatabase();
     }
 
-    public void updateCache() {
-
+    public void updateCache() throws ParseException {
+        client.reActiveUser(userSelected);
     }
 
     public void updateDatabase() {
         dbLoader.updateUser(userSelected);
+    }
+
+    public void editOnClick() {
+        userOnDB = dbLoader.findUserOnDb(userSelected);
+        RequestContext context = RequestContext.getCurrentInstance();
+        context.execute("PF('dlg1').show();");
+        System.out.println("Id DB: " + userOnDB.getUserName());
     }
 
     public final List<UserMeetPeople> getDataMeetPeople() {
@@ -150,5 +180,13 @@ public class UmsBean {
 
     public void setUserSelected(UserMeetPeople userSelected) {
         this.userSelected = userSelected;
+    }
+
+    public UserMeetPeople getUserOnDB() {
+        return userOnDB;
+    }
+
+    public void setUserOnDB(UserMeetPeople userOnDB) {
+        this.userOnDB = userOnDB;
     }
 }

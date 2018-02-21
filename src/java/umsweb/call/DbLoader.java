@@ -17,9 +17,10 @@ import java.io.InputStream;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Properties;
+import javax.servlet.ServletContext;
 import org.bson.types.ObjectId;
 import umsweb.entities.UserMeetPeople;
-import umsweb.entities.UserMeetPeopleServer;
+//import umsweb.entities.UserMeetPeopleServer;
 
 /**
  *
@@ -32,25 +33,32 @@ public class DbLoader {
     private int port;
 
     public DbLoader() {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        InputStream input = classLoader.getResourceAsStream("db.properties");
         Properties prop = new Properties();
-        InputStream input = null;
+//        InputStream input = null;
         try {
-            input = new FileInputStream("db.properties");
-            prop.load(input);
-            ip = prop.getProperty("ip");
-            database = prop.getProperty("database");
-            collection = prop.getProperty("collection");
-            port = Integer.parseInt(prop.getProperty("port"));
+//            input = this.getClass().getResourceAsStream("db.properties");
+//            prop.load(input);
+//            ip = prop.getProperty("ip");
+//            database = prop.getProperty("database");
+//            collection = prop.getProperty("collection");
+//            port = Integer.parseInt(prop.getProperty("port"));
+            ip = "10.64.100.80";
+            database = "userdb";
+            collection = "user";
+            port = 27017;
             Mongo mongo = new Mongo(ip, port);
             DB db = mongo.getDB(database);
             this.table = db.getCollection(collection);
         } catch (IOException ex) {
-            
+            ex.printStackTrace();
         } finally {
             if (input != null) {
                 try {
                     input.close();
                 } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         }
@@ -66,17 +74,26 @@ public class DbLoader {
                 .append("user_name", user.getUserName())
                 .append("gender", user.getGender()));
         try {
+            System.out.println("Search: " + objectSearch.toString());
+            System.out.println("Search: " + newDocument.toString());
             this.table.update(objectSearch, newDocument);
         } catch (Exception e) {
-            
+            e.printStackTrace();
         }
     }
 
-    public UserMeetPeopleServer findUserOnDb(UserMeetPeople user) {
-        
-        return null;
+    public UserMeetPeople findUserOnDb(UserMeetPeople user) {
+        BasicDBObject objectSearch = new BasicDBObject().append("_id", new ObjectId(user.getUserId()));
+        DBObject dbo = table.findOne(objectSearch);
+        UserMeetPeople us = new UserMeetPeople();
+        us.setUserName((String) dbo.get("user_name"));
+        us.setVoieCallWaiting((Boolean) dbo.get("voice_call_waiting"));
+        us.setVideoCallWaiting((Boolean) dbo.get("video_call_waiting"));
+        Integer _gender = (Integer) dbo.get("gender");
+        us.setGender(_gender.longValue());
+        return us;
     }
-    
+
     public static void main(String[] args) {
         try {
             Mongo mongo = new Mongo("10.64.100.80", 27017);
@@ -90,7 +107,7 @@ public class DbLoader {
             searchQuery.put("_id", new ObjectId("577db7520cf275d7466e71c3"));
             DBCursor dBCursor = table.find(searchQuery);
             System.out.println(dBCursor.size());
-            while(dBCursor.hasNext()) {
+            while (dBCursor.hasNext()) {
                 DBObject ob = dBCursor.next();
                 System.out.println("name: " + ob.get("user_name"));
             }

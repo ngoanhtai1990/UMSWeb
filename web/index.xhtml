@@ -88,8 +88,9 @@
                                              action="#{umsBean.activeUserMeetPeople}" update="datafilter" 
                                              styleClass="stylebutton"/>
                             <p:commandButton value="Edit" icon="ui-icon-pencil" style="float: right !important"
-                                             onclick="PF('dlg1').show();"
-                                             styleClass="stylebutton"/>
+                                             styleClass="stylebutton" 
+                                             action="#{umsBean.editOnClick}" 
+                                             update="edituser"/>
                         </td>
                     </tr>
                 </table>
@@ -139,10 +140,18 @@
                 </p:dataTable>
             </p:panel>
             <p:dialog id="edituser" header="Edit user" widgetVar="dlg1" >
-                <p:commandButton value="Update on cache" update="datafilter" action="#{umsBean.updateCache}"/>
-                <p:commandButton value="Update on DB" update="datafilter" action="#{umsBean.updateDatabase}"/>
-                <p:commandButton value="Update All" update="datafilter" action="#{umsBean.updateUser}"/>
                 <table>
+                    <tr>
+                        <td>
+                            <p:commandButton value="Update All" update="datafilter" action="#{umsBean.updateUser}" style="width: 100% !important"/>
+                        </td>
+                        <td>
+                            <p:commandButton value="Update on cache" update="datafilter" action="#{umsBean.updateCache}" style="width: 100% !important"/>
+                        </td>
+                        <td>
+                            <p:commandButton value="Update on DB" update="datafilter" action="#{umsBean.updateDatabase}" style="width: 100% !important"/>
+                        </td>
+                    </tr>
                     <tr>
                         <td>
                             <h:outputText value="Username: " />
@@ -151,7 +160,7 @@
                             <p:inputText value="#{umsBean.userSelected.userName}"/>
                         </td>
                         <td>
-                            <h:outputText value=""/>
+                            <p:inputText value="#{umsBean.userOnDB.userName}" readonly="true"/>
                         </td>
                     </tr>
                     <tr>
@@ -159,10 +168,10 @@
                             <h:outputText value="Age"/>
                         </td>
                         <td>
-                            <p:inputText id="editAgeuser" value="#{umsBean.userSelected.age}" onkeypress="return isNumber(event)"/>
+                            <p:inputText id="editAgeuser" value="#{umsBean.userSelected.age}" onkeypress="return isNumber(event)" readonly="true"/>
                         </td>
                         <td>
-                            <h:outputText value=""/>
+                            <p:inputText value="#{umsBean.userOnDB.age}" onkeypress="return isNumber(event)"/>
                         </td>
                     </tr>
                     <tr>
@@ -173,7 +182,7 @@
                             <p:selectBooleanButton value="#{umsBean.userSelected.voieCallWaiting}" onLabel="True" offLabel="False"/>
                         </td>
                         <td>
-                            <h:outputText value=""/>
+                            <p:selectBooleanButton value="#{umsBean.userOnDB.voieCallWaiting}" onLabel="True" offLabel="False"/>
                         </td>
                     </tr>
                     <tr>
@@ -184,7 +193,7 @@
                             <p:selectBooleanButton value="#{umsBean.userSelected.videoCallWaiting}" onLabel="True" offLabel="False"/>
                         </td>
                         <td>
-                            <h:outputText value=""/>
+                            <p:selectBooleanButton value="#{umsBean.userOnDB.videoCallWaiting}" onLabel="True" offLabel="False"/>
                         </td>
                     </tr>
                     <tr>
@@ -195,7 +204,7 @@
                             <p:inputText value="#{umsBean.userSelected.callWaiting}"/>
                         </td>
                         <td>
-                            <h:outputText value=""/>
+                            <p:inputText value="#{umsBean.userOnDB.callWaiting}" readonly="true"/>
                         </td>
                     </tr>
                     <tr>
@@ -206,7 +215,7 @@
                             <p:inputText value="#{umsBean.userSelected.gender}"/>
                         </td>
                         <td>
-                            <h:outputText value=""/>
+                            <p:inputText value="#{umsBean.userOnDB.gender}" readonly="true"/>
                         </td>
                     </tr>
                 </table>
